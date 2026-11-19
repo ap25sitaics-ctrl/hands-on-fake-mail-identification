@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Spot a Fake Ministry Email: Hands-on Header Lab</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:wght@400;600&display=swap">
+<style>
+:root{--bg:#f4f4f4;--panel:#fff;--ink:#161616;--mute:#585858;--line:#c9c9c9;--soft:#e8e8e8;--dark:#161616;--onDark:#f4f4f4;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121212;--panel:#1c1c1c;--ink:#ececec;--mute:#a6a6a6;--line:#3a3a3a;--soft:#262626;--dark:#ececec;--onDark:#121212;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121212;--panel:#1c1c1c;--ink:#ececec;--mute:#a6a6a6;--line:#3a3a3a;--soft:#262626;--dark:#ececec;--onDark:#121212;color-scheme:dark}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 "Source Sans 3",system-ui,"Segoe UI",Arial,sans-serif}
+h1,h2,h3{font-family:"Source Serif 4",Georgia,"Times New Roman",serif;line-height:1.2;margin:0 0 .5em}
+h1{font-size:clamp(2rem,6vw,3.1rem)}h2{font-size:1.7rem}h3{font-size:1.15rem}
+a{color:inherit}
+.wrap{max-width:860px;margin:0 auto;padding:0 20px}
+nav{position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);border-bottom:1px solid var(--line);z-index:5}
+nav .wrap{display:flex;gap:6px 18px;flex-wrap:wrap;padding-top:10px;padding-bottom:10px;font-size:.95rem}
+nav a{text-decoration:none;color:var(--mute)}nav a:hover,nav a:focus-visible{color:var(--ink);text-decoration:underline}
+header.hero{padding:56px 0 34px;border-bottom:1px solid var(--line)}
+header.hero p{max-width:60ch;color:var(--mute);font-size:1.1rem}
+section{padding:44px 0;border-bottom:1px solid var(--line)}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px 20px;margin:16px 0}
+.plain{border-left:5px solid var(--dark)}
+.plain b{display:block;margin-bottom:2px}
+table{width:100%;border-collapse:collapse;background:var(--panel);font-size:.96rem}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--soft)}
+.scroll{overflow-x:auto}
+pre,textarea{font:13px/1.5 ui-monospace,Consolas,"Courier New",monospace}
+pre{background:var(--dark);color:var(--onDark);padding:14px;border-radius:6px;overflow-x:auto;margin:12px 0;white-space:pre}
+.hl{background:var(--onDark);color:var(--dark);padding:0 3px;border-radius:2px}
+details{background:var(--panel);border:1px solid var(--line);border-radius:6px;margin:10px 0;padding:0 16px}
+summary{cursor:pointer;padding:12px 0;font-weight:600}
+details[open] summary{border-bottom:1px solid var(--line);margin-bottom:10px}
+details>*:last-child{margin-bottom:14px}
+.step{display:flex;gap:14px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:16px;margin:14px 0}
+.step input{width:22px;height:22px;margin-top:4px;accent-color:var(--dark);flex:none}
+.step .n{font-family:"Source Serif 4",Georgia,serif;font-weight:700;font-size:1.4rem;width:1.4em;flex:none;text-align:center;line-height:1.3}
+.step.done{opacity:.6}
+.step h3{margin-bottom:.3em}
+.step p{margin:.3em 0}
+button{font:inherit;font-weight:600;background:var(--dark);color:var(--onDark);border:0;border-radius:6px;padding:10px 18px;cursor:pointer}
+button.alt{background:transparent;color:var(--ink);border:1px solid var(--ink)}
+button:focus-visible,summary:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+textarea{width:100%;min-height:230px;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:12px;resize:vertical}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+.flag{display:inline-block;min-width:4.6em;text-align:center;font-weight:600;padding:1px 8px;border-radius:3px;border:1px solid var(--ink)}
+.flag.bad{background:var(--dark);color:var(--onDark)}
+.flag.ok{background:transparent}
+.flag.warn{border-style:dashed}
+.meter{height:14px;background:var(--soft);border:1px solid var(--line);border-radius:7px;overflow:hidden;margin:8px 0}
+.meter i{display:block;height:100%;background:var(--dark);width:0;transition:width .4s}
+.prog{font-weight:600}
+footer{padding:30px 0 50px;color:var(--mute);font-size:.95rem}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<nav><div class="wrap">
+<a href="#concept">Concept</a><a href="#usecase">Use case</a><a href="#scenario">Scenario</a><a href="#steps">Solve it</a><a href="#analyzer">Analyzer</a><a href="#answers">Answer key</a>
+</div></nav>
+
+<header class="hero"><div class="wrap">
+<h1>Spot a fake ministry email in 15 minutes</h1>
+<p>A hands-on lab on email header forensics. You will read the hidden “postal stamps” on an email, test who really sent it, and decide whether to block it or escalate it. No tools to install; everything runs in this page.</p>
+<p>Level: beginner. Time: about 30 minutes. Safe: all data here is fictional.</p>
+</div></header>
+
+<main class="wrap">
+
+<section id="concept">
+<h2>The raw concept</h2>
+<div class="box plain"><b>In plain words</b>An email is like a parcel. Anyone can write any return address on the outside (the From line). But every post office the parcel passes adds its own stamp (the Received lines). To catch a fake, read the stamps, not the label.</div>
+<p>Every email carries a hidden header: a log of where it came from, which servers handled it, and whether those servers passed three identity checks.</p>
+<div class="scroll"><table>
+<tr><th>Check</th><th>Question it answers</th><th>Plain-language meaning</th></tr>
+<tr><td>SPF</td><td>Is the sending server on the domain’s approved list?</td><td>Is this courier allowed to deliver for this company?</td></tr>
+<tr><td>DKIM</td><td>Does the message carry a valid digital signature?</td><td>Is the wax seal intact and genuine?</td></tr>
+<tr><td>DMARC</td><td>Does the visible From domain match, and what should happen if it fails?</td><td>Does the label match the sender, and what is the rule if not?</td></tr>
+<tr><td>Received lines</td><td>Which servers touched it, in which order?</td><td>The postmarks. Read them bottom to top.</td></tr>
+</table></div>
+<div class="box"><b>Important limit.</b> A header can show where a message technically came from. It cannot prove that a foreign defence body sent it. Attackers rent servers, VPNs and hacked machines abroad on purpose. Treat your findings as indicators and let your CERT make attribution decisions.</div>
+</section>
+
+<section id="usecase">
+<h2>Where this is used</h2>
+<div class="scroll"><table>
+<tr><th>Who</th><th>Situation</th><th>What the header tells them</th></tr>
+<tr><td>SOC analyst</td><td>An officer reports a strange tender email</td><td>Spoofed or genuine, and whether others received it</td></tr>
+<tr><td>CERT responder</td><td>Several staff got the same attachment</td><td>Common sending IP or domain to block across the network</td></tr>
+<tr><td>Defence IT team</td><td>Mail claims to come from a partner ministry</td><td>Whether the partner’s domain really authorized the server</td></tr>
+<tr><td>Student or investigator</td><td>Learning phishing triage</td><td>A repeatable checklist for any suspicious email</td></tr>
+</table></div>
+</section>
+
+<section id="scenario">
+<h2>The scenario: the fake ministry mail</h2>
+<div class="box">An officer at a defence office receives an urgent email that appears to be from a foreign ministry’s procurement desk. It asks them to open <b>Tender_Document.docx</b> and reply with their staff list before Friday. The officer does not open it and forwards it to you as a <b>.eml</b> file. Your task: decide whether it is spam, phishing, or a targeted attack, and write a short triage note.</div>
+<p>Here is the header you received. Study it, then work through the steps. (All names and IP addresses are fictional.)</p>
+<pre id="sample">Return-Path: &lt;bounce@mailer77.hostbulk.example&gt;
+Received: from mail.agency.example (10.1.1.5) by mx.agency.example; Tue, 17 Nov 2026 06:12:20 +0530
+Received: from relay2.hostbulk.example (relay2.hostbulk.example [198.51.100.12]) by mail.agency.example; Tue, 17 Nov 2026 06:12:18 +0530
+Received: from unknown-host (unknown [203.0.113.45]) by relay2.hostbulk.example; Tue, 17 Nov 2026 03:12:10 +0300
+Authentication-Results: mx.agency.example; spf=fail smtp.mailfrom=hostbulk.example; dkim=none; dmarc=fail header.from=rnod-gov.example
+From: "Ministry of Defence Procurement" &lt;procurement@rnod-gov.example&gt;
+Reply-To: &lt;tender.desk.2026@freemailbox.example&gt;
+Subject: URGENT: Confidential tender, reply today
+Date: Tue, 17 Nov 2026 03:12:09 +0300
+Message-ID: &lt;7f3a91@mailer77.hostbulk.example&gt;</pre>
+</section>
+
+<section id="steps">
+<h2>Steps to solve it</h2>
+<p class="prog" id="prog">Progress: 0 of 7 steps</p>
+<div class="meter"><i id="bar"></i></div>
+
+<div class="step"><input type="checkbox" aria-label="Step 1 done"><div class="n">1</div><div>
+<h3>Do not open anything</h3>
+<p>Do not click links, open the attachment or reply. Save the original as a .eml file and record its hash so it can serve as evidence.</p>
+<pre>Get-FileHash C:\Case05\suspect.eml -Algorithm SHA256</pre>
+<details><summary>How to do it</summary><ol>
+<li><b>Save the mail as a file.</b> Gmail: open the mail, click the three dots (top right of the message), choose <b>Download message</b>. Thunderbird: right-click the mail, <b>Save As</b>, keep the .eml type. Outlook (classic): drag the mail to a folder, which saves a .msg file, which is fine for evidence.</li>
+<li><b>Create the case folder.</b> Open PowerShell and run <b>mkdir C:\Case05</b>, then move the saved file into it and name it <b>suspect.eml</b>.</li>
+<li><b>Hash it.</b> Run the command above. Copy the long SHA256 value into a notepad file with today’s date and time. This proves later that the file never changed.</li>
+<li><b>Work on a copy.</b> Run <b>Copy-Item C:\Case05\suspect.eml C:\Case05\work.eml</b> and use work.eml from here on. Keep the original untouched.</li>
+</ol></details></div></div>
+
+<div class="step"><input type="checkbox" aria-label="Step 2 done"><div class="n">2</div><div>
+<h3>Compare the three addresses</h3>
+<p>Look at <b>From</b>, <b>Return-Path</b> and <b>Reply-To</b>. Honest mail usually keeps them on the same organization.</p>
+<details><summary>How to do it</summary><ol>
+<li><b>Open the full header.</b> Gmail: three dots, <b>Show original</b>. Outlook (classic): double-click the mail so it opens in its own window, then <b>File, Properties</b>, and read the <b>Internet headers</b> box at the bottom. Thunderbird: <b>View, Headers, All</b> (or press Ctrl+U).</li>
+<li><b>Or use PowerShell:</b><pre>Select-String -Path C:\Case05\work.eml -Pattern '^(From|Return-Path|Reply-To):'</pre></li>
+<li><b>Write down only the part after the @ sign</b> in each of the three lines. That part is the domain.</li>
+<li><b>Compare them.</b> Same domain or the same organization: normal. Three different domains, or a free mailbox such as Gmail or Yahoo in Reply-To for an “official” mail: red flag.</li>
+<li><b>Look closely at spelling.</b> Swapped letters like <b>rn</b> for <b>m</b>, an extra hyphen, or a different ending such as .co instead of .com are lookalike tricks.</li>
+</ol></details>
+<details><summary>Show the answer</summary>From says <b>rnod-gov.example</b> (note “rn” instead of “m”, a lookalike). Return-Path is <b>hostbulk.example</b>, a bulk mailer. Reply-To is <b>freemailbox.example</b>, a free mailbox. Three different domains: strong red flag.</details></div></div>
+
+<div class="step"><input type="checkbox" aria-label="Step 3 done"><div class="n">3</div><div>
+<h3>Read the identity checks</h3>
+<p>Find the Authentication-Results line and read SPF, DKIM and DMARC.</p>
+<details><summary>How to do it</summary><ol>
+<li><b>Gmail is the easiest.</b> In <b>Show original</b>, the box at the top lists <b>SPF</b>, <b>DKIM</b> and <b>DMARC</b> with PASS or FAIL next to each.</li>
+<li><b>Outlook or any other client:</b> open the Internet headers, press <b>Ctrl+F</b>, and search for <b>Authentication-Results</b>. You will see text like spf=fail; dkim=none; dmarc=fail.</li>
+<li><b>Or use PowerShell:</b><pre>Select-String -Path C:\Case05\work.eml -Pattern 'Authentication-Results|Received-SPF|dkim|dmarc'</pre></li>
+<li><b>Read the result words.</b><div class="scroll"><table><tr><th>Word</th><th>Meaning</th></tr><tr><td>pass</td><td>Check succeeded</td></tr><tr><td>fail or softfail</td><td>Server not approved or signature broken: suspicious</td></tr><tr><td>none or missing</td><td>No protection published: no proof either way</td></tr></table></div></li>
+<li><b>Check which domain passed.</b> In the line, look at <b>header.from=</b>. It must match the visible From domain. A pass for a different domain (the attacker’s own mailer) proves nothing.</li>
+<li><b>Shortcut:</b> paste the header into the Analyzer below and it reads all three for you.</li>
+</ol></details>
+<details><summary>Show the answer</summary>spf=<b>fail</b>, dkim=<b>none</b>, dmarc=<b>fail</b>. The sending server was not approved to send for the claimed domain, and nothing was signed. This is classic spoofing.</details></div></div>
+
+<div class="step"><input type="checkbox" aria-label="Step 4 done"><div class="n">4</div><div>
+<h3>Trace the route (bottom to top)</h3>
+<p>The bottom Received line is closest to the true sender. List the public IP addresses. Ignore private ranges (10.x, 192.168.x, 172.16 to 31.x).</p>
+<details><summary>How to do it</summary><ol>
+<li><b>Find every line that starts with Received:</b> in the header. Each one is a server that handled the mail.</li>
+<li><b>Read from the bottom line up.</b> The bottom line is the first server that accepted the mail, so it is closest to the real sender. The top line is your own server.</li>
+<li><b>In each line find the IP address</b>, usually inside square brackets, such as [203.0.113.45].</li>
+<li><b>Cross out private addresses.</b> These start with 10., 192.168., 127., or 172.16 to 172.31. They are inside networks and cannot be looked up.</li>
+<li><b>Or automate it with the PowerShell command below.</b> It prints every IP found; then remove the private ones yourself.</li>
+<li><b>Optional visual view:</b> Google Admin Toolbox Messageheader shows each hop and the delay between hops. It is a public website, so use it only for practice headers, never for sensitive real ones.</li>
+</ol></details>
+<pre>$h = Get-Content C:\Case05\suspect.eml -Raw
+[regex]::Matches($h,'\b(?:\d{1,3}\.){3}\d{1,3}\b').Value | Select -Unique</pre>
+<details><summary>Show the answer</summary>Origin: <b>203.0.113.45</b> (bottom). Next hop: <b>198.51.100.12</b> (relay2.hostbulk.example). <b>10.1.1.5</b> is a private internal address, so ignore it. The origin host is named “unknown-host”, with no proper identity.</details></div></div>
+
+<div class="step"><input type="checkbox" aria-label="Step 5 done"><div class="n">5</div><div>
+<h3>Look up the origin IP and the domain</h3>
+<p>Check the country and network owner of the origin IP, and the age of the sender’s domain. For sensitive cases use your organization’s internal tools, not public sites.</p>
+<details><summary>How to do it</summary><ol>
+<li><b>Look up the IP.</b> In a browser open ipinfo.io and type the IP into the search box, or in PowerShell run <b>Invoke-RestMethod https://ipinfo.io/8.8.8.8/json</b> and replace 8.8.8.8 with your IP. Note the <b>country</b> and the <b>org</b> (the network owner).</li>
+<li><b>Judge the owner.</b> A hosting company, VPN or cloud provider sending “ministry” mail is suspicious. A real ministry usually sends from its own mail servers.</li>
+<li><b>Check the domain age.</b> Download Sysinternals <b>Whois</b> from Microsoft, then run <b>whois rnod-gov.example</b> and read the <b>Creation Date</b>. A domain created days ago that imitates an official body is a strong red flag.</li>
+<li><b>Check its mail rules.</b><pre>Resolve-DnsName rnod-gov.example -Type TXT
+Resolve-DnsName _dmarc.rnod-gov.example -Type TXT</pre>Look for text starting with <b>v=spf1</b> and <b>v=DMARC1</b>. No records means the domain is not protected, or does not exist.</li>
+<li><b>Practice note:</b> the lab’s IPs and domains are fictional, so real lookups return nothing. Practice the commands with 8.8.8.8 and a real domain of your own first.</li>
+<li><b>Real cases:</b> use your SOC’s threat-intelligence platform instead of public sites for sensitive headers.</li>
+</ol></details>
+<pre>Resolve-DnsName rnod-gov.example -Type TXT
+Resolve-DnsName _dmarc.rnod-gov.example -Type TXT</pre>
+<details><summary>Show the answer</summary>In a real case you would use WHOIS and an IP lookup (ipinfo, AbuseIPDB) here. Expect a hosting or VPN provider and a domain registered only days ago. A foreign origin does <b>not</b> prove a foreign government sent it.</details></div></div>
+
+<div class="step"><input type="checkbox" aria-label="Step 6 done"><div class="n">6</div><div>
+<h3>Check the time clues</h3>
+<p>Compare the Date header’s time zone with the claimed sender and with your own server’s timestamps.</p>
+<details><summary>How to do it</summary><ol>
+<li><b>Find the Date: line.</b> The last part, such as +0300, is the sender’s time zone, three hours ahead of UTC.</li>
+<li><b>Find the timestamp on your own server’s Received line</b> (the top one), for example +0530.</li>
+<li><b>Convert both to UTC with PowerShell:</b><pre>[datetimeoffset]::Parse('Tue, 17 Nov 2026 03:12:09 +0300').UtcDateTime
+[datetimeoffset]::Parse('Tue, 17 Nov 2026 06:12:20 +0530').UtcDateTime</pre></li>
+<li><b>Compare.</b> If the sender’s time is later than your server received it, or hours away, the clock is wrong or forged.</li>
+<li><b>Ask: does the zone fit the story?</b> A mail claiming to be from your own country but sent in a time zone far away is a hint only. Attackers can set any clock, so never decide on this alone.</li>
+</ol></details>
+<details><summary>Show the answer</summary>Date shows <b>+0300</b> at 03:12, while your server logged <b>+0530</b> at 06:12. They are the same moment, so that part is consistent. The time zone only hints at the sender’s system clock, and attackers can set it to anything. Use it as a hint, never as proof.</details></div></div>
+
+<div class="step"><input type="checkbox" aria-label="Step 7 done"><div class="n">7</div><div>
+<h3>Decide and report</h3>
+<p>Choose a category, an action, and write a five-line triage note.</p>
+<details><summary>How to do it</summary><ol>
+<li><b>Add up your findings.</b> Many red flags in steps 2 to 5 (domains differ, checks fail, new domain, hosting IP) point to phishing or spoofing. Targeted staff, secrecy and an attachment point to spear phishing. Everything matching and passing means probably genuine, but still confirm by phone.</li>
+<li><b>Write the five-line note:</b> 1) what arrived and when, 2) domains and IPs seen, 3) which checks failed, 4) your category and why, 5) what you did next. Paste the file hash under it.</li>
+<li><b>Contain it.</b> Ask your mail admin to block the sender domain and the sending IP, and to search all mailboxes for the same subject. With Exchange Online admin rights: <pre>Get-MessageTrace -SenderAddress procurement@rnod-gov.example -StartDate (Get-Date).AddDays(-2) -EndDate (Get-Date)</pre></li>
+<li><b>Warn the people</b> who received it: do not open, do not reply, delete after your admin collects a copy.</li>
+<li><b>Escalate.</b> Send the .eml, the hash and your note to your SOC or CERT (CERT-In in India). Keep the original file safe.</li>
+</ol></details>
+<details><summary>Show the answer</summary><b>Likely spear phishing.</b> It targets named staff, uses secrecy and urgency, spoofs a ministry, and carries an attachment. Action: block the sender and sending IP, preserve the .eml and hashes, warn recipients, and escalate to your SOC or CERT (CERT-In in India). Do not reply.</details></div></div>
+</section>
+
+<section id="analyzer">
+<h2>Try the analyzer</h2>
+<p>Paste any email header below (or use the sample) and press Analyze. It runs in your browser; nothing is uploaded. It is a first-pass helper and does not replace your own judgement.</p>
+<details><summary>How to use the analyzer</summary><ol>
+<li><b>Copy the header.</b> Open the full header (Gmail: <b>Show original</b>; Outlook: <b>File, Properties, Internet headers</b>). Click inside it, press <b>Ctrl+A</b>, then <b>Ctrl+C</b>.</li>
+<li><b>Paste it here.</b> Click in the box below, press <b>Ctrl+A</b> to select the old text, then <b>Ctrl+V</b>. Or pick a sample from the list and press <b>Load sample</b>.</li>
+<li><b>Press Analyze header.</b></li>
+<li><b>Read the suspicion level first,</b> then the table. <b>Red flag</b> means investigate now, <b>Check</b> means look closer, <b>OK</b> means nothing odd for that test.</li>
+<li><b>Take the public IPs</b> from the route line into Step 5 for a lookup.</li>
+<li><b>Compare samples.</b> Run all nine and note which ones score low but still deserve suspicion (samples 7 and 9). This is the main lesson: one tool never gives the full answer.</li>
+<li><b>Privacy tip:</b> the analyzer runs in your browser and uploads nothing, but remove names and addresses from real headers before sharing screenshots.</li>
+</ol></details>
+<textarea id="hdr" aria-label="Email header" spellcheck="false"></textarea>
+<div class="row"><label for="pick" style="align-self:center;font-weight:600">Sample:</label><select id="pick" style="font:inherit;padding:9px 10px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);max-width:100%"><option value="fake">1. Fake ministry mail (spear phishing)</option><option value="legit">2. Genuine partner mail (all checks pass)</option><option value="spam">3. Lottery spam (bulk, unsigned)</option><option value="cred">4. Fake bank alert (credential phishing)</option><option value="fwd">5. Forwarded genuine mail (tricky, false alarm)</option><option value="intel">6. Fake intelligence liaison briefing (spear phishing)</option><option value="qr">7. Fake terror alert from a hijacked account (QR lure)</option><option value="hoax">8. Bomb-threat extortion hoax</option><option value="spoof">9. Display-name spoof of an intelligence bureau</option></select><button class="alt" id="load">Load sample</button><button id="go">Analyze header</button><button class="alt" id="clear">Clear</button></div>
+<p id="note" style="color:var(--mute);margin:0 0 8px">Sample 1 is loaded. Pick another from the list to compare.</p>
+<div id="out"></div>
+</section>
+
+<section id="answers">
+<h2>Answer key</h2>
+<details open><summary>Quick quiz answers</summary>
+<div class="scroll"><table>
+<tr><th>Question</th><th>Answer</th><th>How to find it</th></tr>
+<tr><td>Which part of an email can an attacker fake freely?</td><td>The display name and the visible From address</td><td>Compare the From line with Return-Path and the Received lines. The label can say anything; the stamps cannot.</td></tr>
+<tr><td>Which header shows the true route?</td><td>The Received lines, read bottom to top</td><td>Open the Internet headers, find the lines starting with Received:, and start at the bottom one.</td></tr>
+<tr><td>What does SPF check?</td><td>Whether the sending server is approved for the domain</td><td>Read spf= in Authentication-Results (Step 3). Pass means the sending IP is on the domain’s approved list.</td></tr>
+<tr><td>What does DKIM check?</td><td>Whether the message has a valid signature and was not altered</td><td>Read dkim= in the same line. Pass means the signature matched the message content.</td></tr>
+<tr><td>What does DMARC add?</td><td>Alignment with the visible From domain and a policy for failures</td><td>Read dmarc= and header.from=, then check that header.from matches the visible From domain.</td></tr>
+<tr><td>Does a foreign origin IP prove a foreign government sent it?</td><td>No. VPNs, proxies and hacked servers hide the real actor</td><td>Look up the IP owner (Step 5). Hosting and VPN ranges can be rented by anyone, anywhere.</td></tr>
+<tr><td>Safest way to check an attachment?</td><td>Hash it, look up the hash, open only in a sandbox</td><td>In PowerShell run Get-FileHash file -Algorithm SHA256, search the hash on VirusTotal, and open the file only in a disposable VM with no network.</td></tr>
+<tr><td>Why save the original .eml?</td><td>It keeps the full headers as evidence; forwarding can strip them</td><td>Save as .eml and hash it (Step 1). A forwarded copy may lose the original Received lines.</td></tr>
+<tr><td>Verdict for the sample mail</td><td>Likely spear phishing; block, preserve evidence, escalate to CERT</td><td>Add up the red flags from Steps 2 to 6, then follow the decision steps in Step 7.</td></tr>
+</table></div></details>
+<div class="box"><b>Your 5-line triage note.</b> 1) What arrived and when. 2) Which domains and IPs appeared. 3) Which checks failed. 4) Your category and why. 5) What you did next. Keep the .eml and its hash with the note.</div>
+</section>
+</main>
+
+<footer><div class="wrap">Use this method only on mail you are authorized to examine. Never upload confidential attachments to public sites; share hashes instead.</div></footer>
+
+<script>
+(function(){
+var SAMPLE=document.getElementById("sample").textContent;
+var $=function(i){return document.getElementById(i)};
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+$("hdr").value=SAMPLE;
+var SAMPLES={
+fake:{h:SAMPLE,n:"Lookalike domain, three different sender domains, SPF and DMARC fail, unsigned. Expect a high suspicion level."},
+legit:{h:['Return-Path: <office@partner-ministry.example>','Received: from mail.agency.example (10.1.1.5) by mx.agency.example; Mon, 16 Nov 2026 10:05:41 +0530','Received: from mta1.partner-ministry.example (mta1.partner-ministry.example [192.0.2.25]) by mail.agency.example; Mon, 16 Nov 2026 10:05:40 +0530','Authentication-Results: mx.agency.example; spf=pass smtp.mailfrom=partner-ministry.example; dkim=pass header.d=partner-ministry.example; dmarc=pass header.from=partner-ministry.example','From: "Liaison Office" <office@partner-ministry.example>','Subject: Agenda for Thursday joint meeting','Date: Mon, 16 Nov 2026 10:05:38 +0530','Message-ID: <a1b2c3@mta1.partner-ministry.example>'].join("\n"),n:"Same domain everywhere and SPF, DKIM and DMARC all pass. Expect a low level. Still confirm unusual requests by phone."},
+spam:{h:['Return-Path: <bounce@global-lotto-prize.example>','Received: from mail.agency.example (10.1.1.5) by mx.agency.example; Wed, 18 Nov 2026 14:20:11 +0530','Received: from bulk9.global-lotto-prize.example (bulk9 [198.51.100.77]) by mail.agency.example; Wed, 18 Nov 2026 14:20:10 +0530','Authentication-Results: mx.agency.example; spf=softfail smtp.mailfrom=global-lotto-prize.example; dkim=none; dmarc=none header.from=global-lotto-prize.example','From: "Lucky Draw Team" <winner@global-lotto-prize.example>','Reply-To: <claims@global-lotto-prize.example>','Subject: You have won 5,000,000. Claim now!','Date: Wed, 18 Nov 2026 14:20:09 +0530','Message-ID: <9911@bulk9.global-lotto-prize.example>'].join("\n"),n:"Consistent domains but no signature, soft SPF failure and no DMARC policy. Typical bulk spam: medium level, block and delete."},
+cred:{h:['Return-Path: <x7731@mailer-cloud.example>','Received: from mail.agency.example (10.1.1.5) by mx.agency.example; Thu, 19 Nov 2026 09:41:30 +0530','Received: from smtp-out.mailer-cloud.example (smtp-out [203.0.113.99]) by mail.agency.example; Thu, 19 Nov 2026 09:41:29 +0530','Authentication-Results: mx.agency.example; spf=pass smtp.mailfrom=mailer-cloud.example; dkim=fail header.d=secure-bank.example; dmarc=fail header.from=secure-bank.example','From: "Bank Security" <alerts@secure-bank.example>','Reply-To: <helpdesk@secure-bank-support.example>','Subject: Account locked. Verify your login within 24 hours','Date: Thu, 19 Nov 2026 09:41:25 +0530','Message-ID: <55aa@smtp-out.mailer-cloud.example>'].join("\n"),n:"SPF passes, but only for the attacker’s own mailer, not the bank. DKIM and DMARC fail and Reply-To differs. A good lesson that one pass does not make mail safe."},
+fwd:{h:['Return-Path: <list-bounce@forwarder.example>','Received: from mail.agency.example (10.1.1.5) by mx.agency.example; Tue, 17 Nov 2026 16:02:44 +0530','Received: from fwd1.forwarder.example (fwd1.forwarder.example [192.0.2.140]) by mail.agency.example; Tue, 17 Nov 2026 16:02:43 +0530','Authentication-Results: mx.agency.example; spf=fail smtp.mailfrom=forwarder.example; dkim=pass header.d=company.example; dmarc=pass header.from=company.example','From: "HR Department" <hr@company.example>','Subject: Fwd: Updated leave policy','Date: Tue, 17 Nov 2026 15:58:02 +0530','Message-ID: <ff00@company.example>'].join("\n"),n:"A real message that was forwarded. Return-Path and SPF look bad because of the forwarder, but DKIM and DMARC pass. Expect a medium score: read the checks together, not one at a time."}
+};
+SAMPLES.intel={h:['Return-Path: <b7@mailer12.bulkhost.example>','Received: from mail.agency.example (10.1.1.5) by mx.agency.example; Wed, 18 Nov 2026 21:44:09 +0530','Received: from vps-4471.bulkhost.example (vps-4471 [203.0.113.171]) by mail.agency.example; Wed, 18 Nov 2026 21:44:08 +0530','Authentication-Results: mx.agency.example; spf=fail smtp.mailfrom=bulkhost.example; dkim=none; dmarc=fail header.from=intel-liaison-desk.example','From: "Foreign Intelligence Liaison Desk" <briefing@intel-liaison-desk.example>','Reply-To: <secure.reply.2026@freemailbox.example>','Subject: CONFIDENTIAL: classified threat briefing, reply within 12 hours','Date: Wed, 18 Nov 2026 19:14:02 +0500','Message-ID: <c0ffee@vps-4471.bulkhost.example>'].join("\n"),n:"Invented agency name on a brand-new lookalike domain, secrecy and a deadline, and replies go to a free mailbox. Typical targeted lure to a defence office: expect high."};
+SAMPLES.qr={h:['Return-Path: <duty.desk@districtpolice-portal.example>','Received: from mail.agency.example (10.1.1.5) by mx.agency.example; Thu, 19 Nov 2026 07:31:12 +0530','Received: from mta.districtpolice-portal.example (mta [192.0.2.88]) by mail.agency.example; Thu, 19 Nov 2026 07:31:11 +0530','Authentication-Results: mx.agency.example; spf=pass smtp.mailfrom=districtpolice-portal.example; dkim=pass header.d=districtpolice-portal.example; dmarc=pass header.from=districtpolice-portal.example','From: "Regional Police Alert Cell" <alerts@districtpolice-portal.example>','Reply-To: <alert.cell.verify@freemailbox.example>','Subject: Terror alert: scan the QR code in this mail to confirm your duty roster','Date: Thu, 19 Nov 2026 07:31:09 +0530','Message-ID: <77ab@mta.districtpolice-portal.example>'].join("\n"),n:"Checks pass because the sender account was hijacked, so authentication alone cannot save you. The clues are Reply-To going to a free mailbox, fear and urgency, and a QR code that hides the link (quishing). Expect medium; verify by phone."};
+SAMPLES.hoax={h:['Return-Path: <anon8841@tempbox.example>','Received: from mail.agency.example (10.1.1.5) by mx.agency.example; Mon, 16 Nov 2026 12:09:50 +0530','Received: from node-19.tempbox.example (node-19 [198.51.100.201]) by mail.agency.example; Mon, 16 Nov 2026 12:09:49 +0530','Authentication-Results: mx.agency.example; spf=softfail smtp.mailfrom=tempbox.example; dkim=none; dmarc=none header.from=freemailbox.example','From: "Security Notice" <noreply@freemailbox.example>','Subject: A bomb is placed in your office. Pay or we detonate','Date: Mon, 16 Nov 2026 06:39:40 +0000','Message-ID: <d00d@node-19.tempbox.example>'].join("\n"),n:"Mass-sent extortion hoax: free mailbox, unsigned, no real identity. Even if it looks like a hoax, a real threat message goes straight to your security officer and police under your organization’s threat procedure. Do not triage it alone."};
+SAMPLES.spoof={h:['Return-Path: <ib.desk.official@freemailbox.example>','Received: from mail.agency.example (10.1.1.5) by mx.agency.example; Tue, 17 Nov 2026 11:18:27 +0530','Received: from smtp.freemailbox.example (smtp [192.0.2.60]) by mail.agency.example; Tue, 17 Nov 2026 11:18:26 +0530','Authentication-Results: mx.agency.example; spf=pass smtp.mailfrom=freemailbox.example; dkim=pass header.d=freemailbox.example; dmarc=pass header.from=freemailbox.example','From: "Intelligence Bureau Desk" <ib.desk.official@freemailbox.example>','Subject: Request: share your unit contact list through the secure link','Date: Tue, 17 Nov 2026 11:18:20 +0530','Message-ID: <be11@smtp.freemailbox.example>'].join("\n"),n:"Everything passes because the mail really came from the free provider. The trick is the official-sounding display name. No government body writes from a free mailbox. The analyzer flags this mismatch."};
+function loadSample(){var k=$("pick").value;$("hdr").value=SAMPLES[k].h;$("note").textContent=SAMPLES[k].n;$("out").innerHTML=""}
+$("load").onclick=loadSample;
+$("pick").onchange=loadSample;
+$("clear").onclick=function(){$("hdr").value="";$("out").innerHTML=""};
+
+/* progress checklist */
+var boxes=[].slice.call(document.querySelectorAll(".step input"));
+function prog(){var n=boxes.filter(function(b){return b.checked}).length;
+$("prog").textContent="Progress: "+n+" of "+boxes.length+" steps";$("bar").style.width=(n/boxes.length*100)+"%";
+boxes.forEach(function(b){b.closest(".step").classList.toggle("done",b.checked)});
+try{localStorage.setItem("hdrlab",JSON.stringify(boxes.map(function(b){return b.checked})))}catch(e){}}
+try{var s=JSON.parse(localStorage.getItem("hdrlab")||"[]");boxes.forEach(function(b,i){b.checked=!!s[i]})}catch(e){}
+boxes.forEach(function(b){b.addEventListener("change",prog)});prog();
+
+/* analyzer */
+function dom(a){var m=(a||"").match(/@([A-Za-z0-9.\-]+)/);return m?m[1].toLowerCase():""}
+function isPrivate(ip){var p=ip.split(".").map(Number);if(p.some(function(x){return x>255}))return true;
+return p[0]==10||p[0]==127||(p[0]==192&&p[1]==168)||(p[0]==172&&p[1]>=16&&p[1]<=31)||p[0]==0}
+function analyze(){
+var raw=$("hdr").value.replace(/\r\n?/g,"\n").replace(/\n[ \t]+/g," ");
+if(!raw.trim()){$("out").innerHTML="<div class=\"box\">Paste a header first.</div>";return}
+function get(n){var m=raw.match(new RegExp("^"+n+":\\s*(.*)$","im"));return m?m[1].trim():""}
+var from=get("From"),rp=get("Return-Path"),rt=get("Reply-To");
+var fd=dom(from),rpd=dom(rp),rtd=dom(rt);
+var auth=get("Authentication-Results")+" "+get("Received-SPF");
+function res(k){var m=auth.match(new RegExp(k+"\\s*[=:]?\\s*(pass|fail|softfail|neutral|none|temperror|permerror)","i"));return m?m[1].toLowerCase():"missing"}
+var spf=res("spf"),dkim=res("dkim"),dmarc=res("dmarc");
+var recv=raw.split("\n").filter(function(l){return /^Received:/i.test(l)});
+var ips=[];recv.forEach(function(l){(l.match(/\b(?:\d{1,3}\.){3}\d{1,3}\b/g)||[]).forEach(function(ip){if(!isPrivate(ip)&&ips.indexOf(ip)<0)ips.push(ip)})});
+var origin=ips.length?ips[ips.length-1]:"";
+var dt=get("Date"),tz=(dt.match(/([+-]\d{4})\s*(\(.*\))?$/)||[])[1]||"";
+var rows=[],score=0;
+function add(name,val,lvl,why){score+=lvl=="bad"?2:lvl=="warn"?1:0;
+rows.push("<tr><td>"+name+"</td><td>"+esc(val||"(not found)")+"</td><td><span class=\"flag "+lvl+"\">"+({bad:"Red flag",warn:"Check",ok:"OK"}[lvl])+"</span></td><td>"+why+"</td></tr>")}
+add("From domain",fd,fd?"ok":"warn","The visible sender. Easy to fake, so compare it with the rows below.");
+add("Return-Path domain",rpd,(!rpd)?"warn":(rpd==fd||rpd.slice(-fd.length)==fd?"ok":"bad"),"Should match the From organization for honest mail.");
+add("Reply-To domain",rtd,(!rtd)?"ok":(rtd==fd?"ok":"bad"),"A different Reply-To sends your answer elsewhere.");
+add("SPF",spf,spf=="pass"?"ok":(spf=="softfail"||spf=="missing"||spf=="neutral"||spf=="none")?"warn":"bad","Was the sending server approved by the domain?");
+add("DKIM",dkim,dkim=="pass"?"ok":(dkim=="fail")?"bad":"warn","Is there a valid signature from the domain?");
+add("DMARC",dmarc,dmarc=="pass"?"ok":(dmarc=="fail")?"bad":"warn","Does the From domain align with SPF or DKIM?");
+var dn=from.replace(/<.*$/,""),subj=get("Subject");
+add("Display name vs domain",dn.trim()+" / "+fd,(/(ministry|intelligence|bureau|agency|defen[cs]e|police|army|security|counter)/i.test(dn)&&/(freemailbox|gmail|yahoo|outlook|hotmail|proton)/i.test(fd))?"bad":"ok","An official-sounding name sent from a free mailbox is display-name spoofing.");
+add("Subject pressure words",subj,/(urgent|immediately|confidential|classified|final warning|within \d+ ?(hours|hrs)|act now|threat|alert|bomb|ransom|detonat)/i.test(subj)?"warn":"ok","Urgency, fear and secrecy are common pressure tactics.");
+add("Origin IP (bottom hop)",origin,origin?"warn":"ok","Look up its country and owner. Foreign does not mean government.");
+add("Time zone in Date",tz||dt,tz?"ok":"warn","A hint only. Attackers can set any time zone.");
+var lvl=score>=7?"High":score>=3?"Medium":"Low";
+var act=lvl=="High"?"Treat as phishing or spoofing. Do not open anything. Block the sender and IP, keep the .eml and hash, and escalate to your SOC or CERT."
+:lvl=="Medium"?"Suspicious. Verify the sender through a separate channel (phone) before acting, and inspect links and attachments in a sandbox."
+:"Few indicators found. Still verify unexpected requests, and check links and attachments.";
+$("out").innerHTML="<div class=\"box\"><b>Suspicion level: "+lvl+"</b> (score "+score+" of 20)<div class=\"meter\"><i style=\"width:"+Math.min(100,score/20*100)+"%\"></i></div><p>"+act+"</p></div>"
++"<div class=\"scroll\"><table><tr><th>Check</th><th>Found</th><th>Result</th><th>Why it matters</th></tr>"+rows.join("")+"</table></div>"
++"<div class=\"box\"><b>Public IPs on the route</b> (top to bottom): "+(ips.length?esc(ips.join("  →  ")):"none found")+"<br>This tool cannot prove who sent the mail. It only points to indicators.</div>";
+}
+$("go").onclick=analyze;
+})();
+</script>
+</body>
+</html>
